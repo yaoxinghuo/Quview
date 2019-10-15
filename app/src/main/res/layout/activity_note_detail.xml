@@ -11,9 +11,18 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical">
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:orientation="vertical">
+
+	<TextView
+			style="@style/TextAppearance.AppCompat.Large"
+			android:layout_margin="10dp"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:id="@+id/name"/>
+
+	<ImageView android:layout_width="match_parent" android:layout_height="2dp"
+			   android:background="@drawable/ic_horizontal_line"/>
 
 	<ListView
 			android:id="@+id/cell_list"

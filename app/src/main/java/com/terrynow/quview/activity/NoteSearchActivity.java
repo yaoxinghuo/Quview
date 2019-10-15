@@ -41,7 +41,6 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
 
     private static final String TAG = "NoteSearchActivity";
 
-    private ListView noteListView;
     private NoteListAdapter noteListAdapter;
     private List<NoteModel> list = new ArrayList<>();
 
@@ -54,7 +53,7 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
             return;
         }
 
-        noteListView = findViewById(R.id.note_list);
+        ListView noteListView = findViewById(R.id.note_list);
         noteListAdapter = new NoteListAdapter(this, R.layout.list_note, list);
         noteListView.setAdapter(noteListAdapter);
         noteListView.setOnItemClickListener(this);

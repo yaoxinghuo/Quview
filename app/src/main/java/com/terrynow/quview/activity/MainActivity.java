@@ -42,18 +42,15 @@ public class MainActivity extends NoteBaseActivity implements AdapterView.OnItem
 
     private static final String TAG = "MainActivity";
 
-    private ListView notebookListView;
     private NotebookListAdapter notebookListAdapter;
     private List<NotebookModel> list = new ArrayList<>();
-
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        notebookListView = findViewById(R.id.notebook_list);
+        ListView notebookListView = findViewById(R.id.notebook_list);
         notebookListAdapter = new NotebookListAdapter(this, R.layout.list_notebook, list);
         notebookListView.setAdapter(notebookListAdapter);
         notebookListView.setOnItemClickListener(this);
@@ -73,7 +70,7 @@ public class MainActivity extends NoteBaseActivity implements AdapterView.OnItem
         inflater.inflate(R.menu.menu, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;

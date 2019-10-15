@@ -14,6 +14,7 @@ package com.terrynow.quview.activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteCellListAdapter;
@@ -41,14 +42,13 @@ public class NoteDetailActivity extends NoteBaseActivity {
 
     private NoteModel noteModel;
 
-    private ListView noteCellListView;
     private NoteCellListAdapter noteCellListAdapter;
     private List<NoteCellModel> list = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_view);
+        setContentView(R.layout.activity_note_detail);
 
         noteModel = (NoteModel) getIntent().getSerializableExtra("note");
 
@@ -56,9 +56,12 @@ public class NoteDetailActivity extends NoteBaseActivity {
             getSupportActionBar().setTitle(noteModel.getName());
         }
 
-        noteCellListView = findViewById(R.id.cell_list);
+        ListView noteCellListView = findViewById(R.id.cell_list);
         noteCellListAdapter = new NoteCellListAdapter(this, R.layout.list_notecell, list);
         noteCellListView.setAdapter(noteCellListAdapter);
+
+        TextView nameView = findViewById(R.id.name);
+        nameView.setText(noteModel.getName());
 
         loadNoteDetail();
     }

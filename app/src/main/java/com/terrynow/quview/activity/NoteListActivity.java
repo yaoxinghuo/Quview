@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,7 +42,6 @@ public class NoteListActivity extends NoteBaseActivity implements AdapterView.On
 
     private NotebookModel notebookModel;
 
-    private ListView noteListView;
     private NoteListAdapter noteListAdapter;
     private List<NoteModel> list = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class NoteListActivity extends NoteBaseActivity implements AdapterView.On
             getSupportActionBar().setTitle(notebookModel.getName());
         }
 
-        noteListView = findViewById(R.id.note_list);
+        ListView noteListView = findViewById(R.id.note_list);
         noteListAdapter = new NoteListAdapter(this, R.layout.list_note, list);
         noteListView.setAdapter(noteListAdapter);
         noteListView.setOnItemClickListener(this);
@@ -83,6 +83,8 @@ public class NoteListActivity extends NoteBaseActivity implements AdapterView.On
                     NoteModel noteModel = new NoteModel();
                     noteModel.setName(jsonObject.getString("title"));
                     noteModel.setUuid(jsonObject.getString("uuid"));
+                    noteModel.setCreateDate(new Date(jsonObject.optLong("created_at") * 1000));
+                    noteModel.setUpdateDate(new Date(jsonObject.optLong("updated_at") * 1000));
                     noteModel.setDir(noteDir.getAbsolutePath());
                     list.add(noteModel);
                 } catch (Exception e) {

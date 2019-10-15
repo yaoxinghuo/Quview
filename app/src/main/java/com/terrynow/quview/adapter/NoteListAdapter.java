@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import com.terrynow.quview.R;
 import com.terrynow.quview.model.NoteModel;
 
+import java.text.DateFormat;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public class NoteListAdapter extends ArrayAdapter<NoteModel> {
         TextView titleView = view.findViewById(R.id.title);
         TextView summaryView = view.findViewById(R.id.summary);
         titleView.setText(noteModel.getName());
-        summaryView.setText(noteModel.getUuid());
+        summaryView.setText(DateFormat.getDateInstance().format(noteModel.getUpdateDate()));
 
         return view;
     }
