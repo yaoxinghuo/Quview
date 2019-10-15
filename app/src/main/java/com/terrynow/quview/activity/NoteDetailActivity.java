@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteCellListAdapter;
 import com.terrynow.quview.model.NoteCellModel;
@@ -34,7 +33,7 @@ import java.util.List;
  * @date 2019-10-15 13:31
  * @description
  */
-public class NoteDetailActivity extends AppCompatActivity {
+public class NoteDetailActivity extends NoteBaseActivity {
     private static final String TAG = "NoteDetailActivity";
 
     private NoteModel noteModel;
@@ -50,7 +49,9 @@ public class NoteDetailActivity extends AppCompatActivity {
 
         noteModel = (NoteModel) getIntent().getSerializableExtra("note");
 
-        getSupportActionBar().setTitle(noteModel.getName());
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(noteModel.getName());
+        }
 
         noteCellListView = findViewById(R.id.cell_list);
         noteCellListAdapter = new NoteCellListAdapter(this, R.layout.list_notecell, list);

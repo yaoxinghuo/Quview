@@ -48,6 +48,16 @@ public class NoteBaseActivity extends AppCompatActivity {
         searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
+        if (getSupportActionBar() != null && !(this instanceof MainActivity)) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
         return true;
     }
 }

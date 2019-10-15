@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import androidx.appcompat.app.AppCompatActivity;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteListAdapter;
 import com.terrynow.quview.model.NoteModel;
@@ -38,7 +37,7 @@ import java.util.regex.Pattern;
  * @date 2019-10-15 14:52
  * @description
  */
-public class NoteSearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "NoteSearchActivity";
 
@@ -99,7 +98,10 @@ public class NoteSearchActivity extends AppCompatActivity implements AdapterView
             }
         }
         noteListAdapter.notifyDataSetChanged();
-        getSupportActionBar().setTitle(query);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(query);
+        }
     }
 
     private List<NoteModel> searchNotes(NotebookModel notebookModel, String query) {

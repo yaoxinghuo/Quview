@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteListAdapter;
 import com.terrynow.quview.model.NoteModel;
@@ -36,7 +35,7 @@ import java.util.List;
  * @date 2019-10-15 13:33
  * @description
  */
-public class NoteListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class NoteListActivity extends NoteBaseActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "NoteListActivity";
 
@@ -53,7 +52,9 @@ public class NoteListActivity extends AppCompatActivity implements AdapterView.O
 
         notebookModel = (NotebookModel) getIntent().getSerializableExtra("notebook");
 
-        getSupportActionBar().setTitle(notebookModel.getName());
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(notebookModel.getName());
+        }
 
         noteListView = findViewById(R.id.note_list);
         noteListAdapter = new NoteListAdapter(this, R.layout.list_note, list);
