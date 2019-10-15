@@ -36,6 +36,9 @@ import java.util.List;
 public class NoteDetailActivity extends NoteBaseActivity {
     private static final String TAG = "NoteDetailActivity";
 
+    //    private static final String[] availableTypes = new String[]{"text", "code", "markdown", "latex", "diagram"};
+    private static final String[] availableTypes = new String[]{"text", "code", "markdown"};
+
     private NoteModel noteModel;
 
     private ListView noteCellListView;
@@ -71,9 +74,13 @@ public class NoteDetailActivity extends NoteBaseActivity {
             list.clear();
             for (int i = 0; i < cellsArray.length(); i++) {
                 JSONObject cellObject = cellsArray.getJSONObject(i);
+                String type = cellObject.getString("type");
+                if (!isAvailableType(type)) {
+                    continue;
+                }
                 NoteCellModel noteCellModel = new NoteCellModel();
-                noteCellModel.setType(cellObject.getString("type"));
-                noteCellModel.setLanguage(cellObject.getString("language"));
+                noteCellModel.setType(type);
+                noteCellModel.setLanguage(cellObject.optString("language"));
                 noteCellModel.setData(cellObject.getString("data"));
                 list.add(noteCellModel);
             }
@@ -81,5 +88,14 @@ public class NoteDetailActivity extends NoteBaseActivity {
         } catch (Exception e) {
             Log.e(TAG, "error parser note detail", e);
         }
+    }
+
+    private boolean isAvailableType(String type) {
+        for (String availableType : availableTypes) {
+            if (availableType.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

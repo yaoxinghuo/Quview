@@ -12,7 +12,6 @@
 package com.terrynow.quview;
 
 import android.app.Application;
-import io.github.kbiakov.codeview.classifier.CodeProcessor;
 
 /**
  * @author Terry E-mail: yaoxinghuo at 126 dot com
@@ -23,7 +22,5 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        CodeProcessor.init(this);
     }
 }

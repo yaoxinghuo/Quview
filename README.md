@@ -11,9 +11,7 @@
 
 #### TODO
 1. Icon
-2. List Layout
-3. Search in codes
-4. markdown support
-5. diagram support
-6. cell scroll issue
-7. Choose Library Location, for now it is hard coded.
+2. markdown support
+3. Choose Library Location, for now it is hard coded
+4. Tag support
+5. Load images

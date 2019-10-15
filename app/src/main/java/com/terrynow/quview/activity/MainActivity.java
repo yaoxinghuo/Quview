@@ -12,15 +12,20 @@
 package com.terrynow.quview.activity;
 
 import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NotebookListAdapter;
@@ -41,6 +46,8 @@ public class MainActivity extends NoteBaseActivity implements AdapterView.OnItem
     private NotebookListAdapter notebookListAdapter;
     private List<NotebookModel> list = new ArrayList<>();
 
+    private SearchView searchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +63,20 @@ public class MainActivity extends NoteBaseActivity implements AdapterView.OnItem
         }
 
         loadNotebooks();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
     }
 
     private void loadNotebooks() {

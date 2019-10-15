@@ -43,9 +43,9 @@ public class NotebookListAdapter extends ArrayAdapter<NotebookModel> {
         NotebookModel notebookModel = getItem(position);
         View view = LayoutInflater.from(getContext()).inflate(layoutId, parent, false);
         TextView nameView = view.findViewById(R.id.name);
-        TextView summaryView = view.findViewById(R.id.summary);
+//        TextView summaryView = view.findViewById(R.id.summary);
         nameView.setText(notebookModel.getName());
-        summaryView.setText(notebookModel.getUuid());
+//        summaryView.setText(notebookModel.getUuid());
 
         return view;
     }
