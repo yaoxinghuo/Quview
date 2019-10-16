@@ -37,7 +37,8 @@ import java.util.List;
 public class NoteDetailActivity extends NoteBaseActivity {
     private static final String TAG = "NoteDetailActivity";
 
-    //    private static final String[] supportedTypes = new String[]{"text", "code", "markdown", "latex", "diagram"};
+    //    private static final String[] supportedTypes = new String[]{"text", "code", "markdown",
+    //    "latex", "diagram"};
     private static final String[] supportedTypes = new String[]{"text", "code", "markdown"};
 
     private NoteModel noteModel;
@@ -57,7 +58,8 @@ public class NoteDetailActivity extends NoteBaseActivity {
         }
 
         ListView noteCellListView = findViewById(R.id.cell_list);
-        noteCellListAdapter = new NoteCellListAdapter(this, R.layout.list_notecell, list);
+        noteCellListAdapter = new NoteCellListAdapter(this, R.layout.list_notecell, list,
+                noteModel.getDir());
         noteCellListView.setAdapter(noteCellListAdapter);
 
         TextView nameView = findViewById(R.id.name);

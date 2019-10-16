@@ -32,11 +32,13 @@ import java.util.List;
  */
 public class NoteCellListAdapter extends ArrayAdapter<NoteCellModel> {
     private int layoutId;
+    private String dir;
 
     public NoteCellListAdapter(@NonNull Context context, int resource,
-                               @NonNull List<NoteCellModel> objects) {
+                               @NonNull List<NoteCellModel> objects, String dir) {
         super(context, resource, objects);
         this.layoutId = resource;
+        this.dir = dir;
     }
 
     @NonNull
@@ -56,8 +58,11 @@ public class NoteCellListAdapter extends ArrayAdapter<NoteCellModel> {
         WebView cellView = view.findViewById(R.id.cell);
         Codeview codeview = Codeview.with(getContext()).setAutoWrap(true);
         if ("text".equals(type)) {
-//            cellView.loadData(notecellModel.getData(), "text/html", "UTF-8");
-            codeview.withHtml(notecellModel.getData())
+            String imagePath = "file://" + dir + "/resources/";
+            String str = notecellModel.getData()
+                    .replaceAll(" src=\"quiver-image-url/"
+                            , " style=\"width: 100%;height: auto;\" src=\"" + imagePath);
+            codeview.withHtml(str)
                     .into(cellView);
         } else if ("code".equals(type)) {
             codeview.setLang(notecellModel.getLanguage()).withCode(notecellModel.getData())
