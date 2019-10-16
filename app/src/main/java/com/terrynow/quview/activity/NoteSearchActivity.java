@@ -12,17 +12,21 @@
 package com.terrynow.quview.activity;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteListAdapter;
 import com.terrynow.quview.model.NoteModel;
 import com.terrynow.quview.model.NotebookModel;
+import com.terrynow.quview.util.Constants;
 import com.terrynow.quview.util.Utils;
 import org.json.JSONObject;
 
@@ -66,8 +70,14 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
     }
 
     private void query(String query) {
-        File qvlibraryBase = new File(Environment.getExternalStorageDirectory(),
-                "Download/Quiver.qvlibrary");
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences",
+                Context.MODE_PRIVATE);
+        String qvlibrary = sharedPreferences.getString(Constants.PREF_QV_LIBRARY_PATH, null);
+        if (TextUtils.isEmpty(qvlibrary)) {
+            Toast.makeText(this, R.string.qvlibrary_none, Toast.LENGTH_LONG).show();
+            return;
+        }
+        File qvlibraryBase = new File(qvlibrary);
         list.clear();
         File[] notebookDirs = qvlibraryBase.listFiles(new FilenameFilter() {
             @Override
