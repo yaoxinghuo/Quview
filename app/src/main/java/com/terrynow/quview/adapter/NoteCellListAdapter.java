@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import com.protectsoft.webviewcode.Codeview;
 import com.terrynow.quview.R;
 import com.terrynow.quview.model.NoteCellModel;
+import us.feras.mdv.MarkdownView;
 
 import java.util.List;
 
@@ -42,9 +43,17 @@ public class NoteCellListAdapter extends ArrayAdapter<NoteCellModel> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         NoteCellModel notecellModel = getItem(position);
+        String type = notecellModel.getType();
+        if ("markdown".equals(type)) {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.list_notecell_markdown
+                    , parent, false);
+            MarkdownView markdownView = view.findViewById(R.id.cell);
+            markdownView.loadMarkdown(notecellModel.getData());
+            return view;
+        }
+
         View view = LayoutInflater.from(getContext()).inflate(layoutId, parent, false);
         WebView cellView = view.findViewById(R.id.cell);
-        String type = notecellModel.getType();
         Codeview codeview = Codeview.with(getContext()).setAutoWrap(true);
         if ("text".equals(type)) {
 //            cellView.loadData(notecellModel.getData(), "text/html", "UTF-8");
@@ -52,9 +61,6 @@ public class NoteCellListAdapter extends ArrayAdapter<NoteCellModel> {
                     .into(cellView);
         } else if ("code".equals(type)) {
             codeview.setLang(notecellModel.getLanguage()).withCode(notecellModel.getData())
-                    .into(cellView);
-        }else if("markdown".equals(type)){
-            codeview.withCode(notecellModel.getData())
                     .into(cellView);
         }
         //TODO how about latex, diagram?
