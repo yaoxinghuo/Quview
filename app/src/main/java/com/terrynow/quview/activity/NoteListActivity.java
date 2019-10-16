@@ -23,12 +23,8 @@ import com.terrynow.quview.adapter.NoteListAdapter;
 import com.terrynow.quview.model.NoteModel;
 import com.terrynow.quview.model.NotebookModel;
 import com.terrynow.quview.util.Utils;
-import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,32 +61,11 @@ public class NoteListActivity extends NoteBaseActivity implements AdapterView.On
     }
 
     private void loadNotes() {
-        File base = new File(notebookModel.getDir());
-        System.out.println(base.getAbsoluteFile());
-        System.out.println(base.exists());
         list.clear();
-        File[] noteDirs = base.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return dir.isDirectory() && name.endsWith(".qvnote");
-            }
-        });
-        if (noteDirs != null) {
-            for (File noteDir : noteDirs) {
-                try {
-                    File meta = new File(noteDir, "meta.json");
-                    JSONObject jsonObject = Utils.readFileToJson(meta);
-                    NoteModel noteModel = new NoteModel();
-                    noteModel.setName(jsonObject.getString("title"));
-                    noteModel.setUuid(jsonObject.getString("uuid"));
-                    noteModel.setCreateDate(new Date(jsonObject.optLong("created_at") * 1000));
-                    noteModel.setUpdateDate(new Date(jsonObject.optLong("updated_at") * 1000));
-                    noteModel.setDir(noteDir.getAbsolutePath());
-                    list.add(noteModel);
-                } catch (Exception e) {
-                    Log.e(TAG, "error parser note", e);
-                }
-            }
+        try {
+            list.addAll(Utils.searchNotes(notebookModel, null));
+        } catch (Exception e) {
+            Log.e(TAG, "error parser note", e);
         }
         noteListAdapter.notifyDataSetChanged();
     }

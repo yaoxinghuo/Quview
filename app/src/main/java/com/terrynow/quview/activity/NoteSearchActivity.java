@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author Terry E-mail: yaoxinghuo at 126 dot com
@@ -86,7 +85,7 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
                     notebookModel.setUuid(jsonObject.getString("uuid"));
                     notebookModel.setDir(notebookDir.getAbsolutePath());
 
-                    List<NoteModel> searchedNotes = searchNotes(notebookModel, query);
+                    List<NoteModel> searchedNotes = Utils.searchNotes(notebookModel, query);
                     list.addAll(searchedNotes);
                     if (list.size() > 50) {
                         break;
@@ -101,39 +100,6 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(query);
         }
-    }
-
-    private List<NoteModel> searchNotes(NotebookModel notebookModel, String query) {
-        List<NoteModel> notes = new ArrayList<>();
-        File base = new File(notebookModel.getDir());
-        System.out.println(base.getAbsoluteFile());
-        System.out.println(base.exists());
-        File[] noteDirs = base.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return dir.isDirectory() && name.endsWith(".qvnote");
-            }
-        });
-        if (noteDirs != null) {
-            for (File noteDir : noteDirs) {
-                try {
-                    File meta = new File(noteDir, "meta.json");
-                    JSONObject jsonObject = Utils.readFileToJson(meta);
-                    String title = jsonObject.getString("title");
-                    if (Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE).matcher(title).find()) {
-                        NoteModel noteModel = new NoteModel();
-                        noteModel.setName(title);
-                        noteModel.setUuid(jsonObject.getString("uuid"));
-                        noteModel.setDir(noteDir.getAbsolutePath());
-                        notes.add(noteModel);
-                    }
-
-                } catch (Exception e) {
-                    Log.e(TAG, "error parser note", e);
-                }
-            }
-        }
-        return notes;
     }
 
     private String getSearchStr(Intent queryIntent) {

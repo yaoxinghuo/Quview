@@ -3,7 +3,7 @@
 
 ### It is in development yet
 
-##### implemented
+##### DONE
 1. NoteBook List
 2. Note List
 3. Note Detail View

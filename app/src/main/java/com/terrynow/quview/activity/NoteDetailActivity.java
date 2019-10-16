@@ -37,8 +37,8 @@ import java.util.List;
 public class NoteDetailActivity extends NoteBaseActivity {
     private static final String TAG = "NoteDetailActivity";
 
-    //    private static final String[] availableTypes = new String[]{"text", "code", "markdown", "latex", "diagram"};
-    private static final String[] availableTypes = new String[]{"text", "code", "markdown"};
+    //    private static final String[] supportedTypes = new String[]{"text", "code", "markdown", "latex", "diagram"};
+    private static final String[] supportedTypes = new String[]{"text", "code", "markdown"};
 
     private NoteModel noteModel;
 
@@ -78,7 +78,7 @@ public class NoteDetailActivity extends NoteBaseActivity {
             for (int i = 0; i < cellsArray.length(); i++) {
                 JSONObject cellObject = cellsArray.getJSONObject(i);
                 String type = cellObject.getString("type");
-                if (!isAvailableType(type)) {
+                if (!isSupportedType(type)) {
                     continue;
                 }
                 NoteCellModel noteCellModel = new NoteCellModel();
@@ -93,9 +93,9 @@ public class NoteDetailActivity extends NoteBaseActivity {
         }
     }
 
-    private boolean isAvailableType(String type) {
-        for (String availableType : availableTypes) {
-            if (availableType.equals(type)) {
+    private boolean isSupportedType(String type) {
+        for (String supportedType : supportedTypes) {
+            if (supportedType.equals(type)) {
                 return true;
             }
         }
