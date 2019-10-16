@@ -37,10 +37,6 @@ import java.util.List;
 public class NoteDetailActivity extends NoteBaseActivity {
     private static final String TAG = "NoteDetailActivity";
 
-    //    private static final String[] supportedTypes = new String[]{"text", "code", "markdown",
-    //    "latex", "diagram"};
-    private static final String[] supportedTypes = new String[]{"text", "code", "markdown"};
-
     private NoteModel noteModel;
 
     private NoteCellListAdapter noteCellListAdapter;
@@ -70,8 +66,7 @@ public class NoteDetailActivity extends NoteBaseActivity {
 
     private void loadNoteDetail() {
         try {
-            JSONObject jsonObject = Utils.readFileToJson(new File(noteModel.getDir(),
-                    "content.json"));
+            JSONObject jsonObject = Utils.readFileToJson(new File(noteModel.getDir(), "content.json"));
             NoteDetailModel noteDetailModel = new NoteDetailModel();
             noteDetailModel.setTitle(jsonObject.getString("title"));
             JSONArray cellsArray = jsonObject.has("cells") ? jsonObject.getJSONArray("cells") :
@@ -80,7 +75,7 @@ public class NoteDetailActivity extends NoteBaseActivity {
             for (int i = 0; i < cellsArray.length(); i++) {
                 JSONObject cellObject = cellsArray.getJSONObject(i);
                 String type = cellObject.getString("type");
-                if (!isSupportedType(type)) {
+                if (!Utils.isSupportedType(type)) {
                     continue;
                 }
                 NoteCellModel noteCellModel = new NoteCellModel();
@@ -95,12 +90,5 @@ public class NoteDetailActivity extends NoteBaseActivity {
         }
     }
 
-    private boolean isSupportedType(String type) {
-        for (String supportedType : supportedTypes) {
-            if (supportedType.equals(type)) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 }

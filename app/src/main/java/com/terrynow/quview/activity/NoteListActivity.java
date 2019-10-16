@@ -63,7 +63,7 @@ public class NoteListActivity extends NoteBaseActivity implements AdapterView.On
     private void loadNotes() {
         list.clear();
         try {
-            list.addAll(Utils.searchNotes(notebookModel, null));
+            list.addAll(Utils.searchNotes(notebookModel, null, false));
         } catch (Exception e) {
             Log.e(TAG, "error parser note", e);
         }

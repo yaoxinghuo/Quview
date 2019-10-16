@@ -6,13 +6,11 @@
 * NoteBook List
 * Note List
 * Note Detail View(code/markdown)
-* Image Support
-* Search Note
+* Search Note(title/full search)
 
 #### TODO
 * Icon
 * Tag support
-* Full content search
 
 _Snippet about copy quiver library to SD_
 

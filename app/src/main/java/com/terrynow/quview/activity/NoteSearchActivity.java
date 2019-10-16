@@ -11,17 +11,24 @@
 
 package com.terrynow.quview.activity;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.terrynow.quview.R;
 import com.terrynow.quview.adapter.NoteListAdapter;
@@ -52,7 +59,7 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_list);
+        setContentView(R.layout.activity_note_search);
 
         if (isFinishing()) {
             return;
@@ -66,62 +73,47 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
         findViewById(R.id.search).setOnClickListener(this);
 
         keywordText = findViewById(R.id.name);
+        keywordText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch(keywordText.getText().toString(), true);
+                    return true;
+                }
+                return false;
+            }
+        });
+        keywordText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if (motionEvent.getX() > (keywordText.getWidth() - keywordText.getCompoundPaddingEnd())) {
+                        keywordText.setText("");
+                    }
+                }
+                return false;
+            }
+        });
 
         String keywords = getSearchStr(getIntent());
         keywordText.setText(keywords);
-        performSearch(keywords);
+        keywordText.setSelection(keywords.length());
+        performSearch(keywords, false);
 
     }
 
-    private void performSearch(String query) {
-        query(query.trim());
-    }
-
-    private void query(String query) {
-        SharedPreferences sharedPreferences = getSharedPreferences("preferences",
-                Context.MODE_PRIVATE);
+    private void performSearch(String query, boolean fullSearch) {
+        hideSoftKeyboard();
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         String qvlibrary = sharedPreferences.getString(Constants.PREF_QV_LIBRARY_PATH, null);
         if (TextUtils.isEmpty(qvlibrary)) {
             Toast.makeText(this, R.string.qvlibrary_none, Toast.LENGTH_LONG).show();
             return;
         }
-        File qvlibraryBase = new File(qvlibrary);
-        list.clear();
-        File[] notebookDirs = qvlibraryBase.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return dir.isDirectory() && name.endsWith(".qvnotebook");
-            }
-        });
-        if (notebookDirs != null) {
-            for (File notebookDir : notebookDirs) {
-                try {
-                    File meta = new File(notebookDir, "meta.json");
-                    JSONObject jsonObject = Utils.readFileToJson(meta);
-                    NotebookModel notebookModel = new NotebookModel();
-                    notebookModel.setName(jsonObject.getString("name"));
-                    notebookModel.setUuid(jsonObject.getString("uuid"));
-                    notebookModel.setDir(notebookDir.getAbsolutePath());
-
-                    List<NoteModel> searchedNotes = Utils.searchNotes(notebookModel, query);
-                    list.addAll(searchedNotes);
-                    if (list.size() > 50) {
-                        break;
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "error parser notebook", e);
-                }
-            }
-        }
-        noteListAdapter.notifyDataSetChanged();
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(query);
-        }
+        new SearchAsyncTask(this).execute(qvlibrary, query.trim(), fullSearch ? "fs" : "");
     }
 
     private String getSearchStr(Intent queryIntent) {
-        // get and process search query here
         final String queryAction = queryIntent.getAction();
         if (Intent.ACTION_SEARCH.equals(queryAction)) {
             return queryIntent.getStringExtra(SearchManager.QUERY);
@@ -143,8 +135,92 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.search:
-                query(keywordText.getText().toString());
+                performSearch(keywordText.getText().toString(), true);
                 break;
+        }
+    }
+
+    class SearchAsyncTask extends AsyncTask<String, Integer, List<NoteModel>> {
+        private ProgressDialog dialog;
+        private String query;
+
+        SearchAsyncTask(NoteSearchActivity activity) {
+            dialog = new ProgressDialog(activity);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setMessage(getString(R.string.searching));
+            dialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            dialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected List<NoteModel> doInBackground(String... args) {
+            List<NoteModel> results = new ArrayList<>();
+            String qvlibrary = args[0];
+            this.query = args[1];
+            boolean fullSearch = "fs".equals(args[2]);
+            File qvlibraryBase = new File(qvlibrary);
+            File[] notebookDirs = qvlibraryBase.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return dir.isDirectory() && name.endsWith(".qvnotebook");
+                }
+            });
+            int percent = 0;
+            if (notebookDirs != null) {
+                for (int i = 0; i < notebookDirs.length; i++) {
+                    File notebookDir = notebookDirs[i];
+                    percent = (i + 1) * 100 / notebookDirs.length;
+                    if (percent > 100) {
+                        percent = 100;
+                    }
+                    try {
+                        publishProgress(percent);
+                        File meta = new File(notebookDir, "meta.json");
+                        JSONObject jsonObject = Utils.readFileToJson(meta);
+                        NotebookModel notebookModel = new NotebookModel();
+                        notebookModel.setName(jsonObject.getString("name"));
+                        notebookModel.setUuid(jsonObject.getString("uuid"));
+                        notebookModel.setDir(notebookDir.getAbsolutePath());
+
+                        List<NoteModel> searchedNotes = Utils.searchNotes(notebookModel, query, fullSearch);
+                        results.addAll(searchedNotes);
+                        if (results.size() > 50) {
+                            break;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "error parser notebook", e);
+                    }
+                }
+            }
+            return results;
+        }
+
+        @Override
+        protected void onPostExecute(List<NoteModel> results) {
+            list.clear();
+            list.addAll(results);
+            noteListAdapter.notifyDataSetChanged();
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(query);
+            }
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
+    }
+
+    private void hideSoftKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

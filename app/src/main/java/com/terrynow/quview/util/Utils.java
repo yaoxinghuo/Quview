@@ -14,7 +14,10 @@ package com.terrynow.quview.util;
 import android.text.TextUtils;
 import com.terrynow.quview.model.NoteModel;
 import com.terrynow.quview.model.NotebookModel;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,6 +35,10 @@ import java.util.regex.Pattern;
  * @description
  */
 public class Utils {
+    //    private static final String[] supportedTypes = new String[]{"text", "code", "markdown",
+    //    "latex", "diagram"};
+    private static final String[] supportedTypes = new String[]{"text", "code", "markdown"};
+
     public static JSONObject readFileToJson(File file) throws Exception {
         BufferedReader bufferedReader = null;
         try {
@@ -56,7 +63,7 @@ public class Utils {
         }
     }
 
-    public static List<NoteModel> searchNotes(NotebookModel notebookModel, String query) throws Exception {
+    public static List<NoteModel> searchNotes(NotebookModel notebookModel, String query, boolean fullSearch) throws Exception {
         List<NoteModel> notes = new ArrayList<>();
         File base = new File(notebookModel.getDir());
         File[] noteDirs = base.listFiles(new FilenameFilter() {
@@ -67,21 +74,62 @@ public class Utils {
         });
         if (noteDirs != null) {
             for (File noteDir : noteDirs) {
-                File meta = new File(noteDir, "meta.json");
-                JSONObject jsonObject = Utils.readFileToJson(meta);
-                String title = jsonObject.getString("title");
-                if (isMatch(title, query)) {
+                boolean match = false;
+                JSONObject metaObject = null;
+                if (fullSearch) {
+                    JSONObject jsonObject = Utils.readFileToJson(new File(noteDir, "content.json"));
+                    String title = jsonObject.getString("title");
+                    match = isMatch(title, query);
+                    if (!match) {
+                        JSONArray cellsArray = jsonObject.has("cells") ? jsonObject.getJSONArray("cells") :
+                                new JSONArray();
+                        match = isMatch(cellsArray, query);
+                    }
+
+                } else {
+                    metaObject = Utils.readFileToJson(new File(noteDir, "meta.json"));
+                    String title = metaObject.getString("title");
+                    match = isMatch(title, query);
+                }
+                if (match) {
+                    if (metaObject == null) {
+                        metaObject = Utils.readFileToJson(new File(noteDir, "meta.json"));
+                    }
                     NoteModel noteModel = new NoteModel();
-                    noteModel.setName(title);
-                    noteModel.setUuid(jsonObject.getString("uuid"));
-                    noteModel.setCreateDate(new Date(jsonObject.optLong("created_at") * 1000));
-                    noteModel.setUpdateDate(new Date(jsonObject.optLong("updated_at") * 1000));
+                    noteModel.setName(metaObject.getString("title"));
+                    noteModel.setUuid(metaObject.getString("uuid"));
+                    noteModel.setCreateDate(new Date(metaObject.optLong("created_at") * 1000));
+                    noteModel.setUpdateDate(new Date(metaObject.optLong("updated_at") * 1000));
                     noteModel.setDir(noteDir.getAbsolutePath());
                     notes.add(noteModel);
                 }
             }
         }
         return notes;
+    }
+
+    private static boolean isMatch(JSONArray cellsArray, String query) {
+        try {
+            for (int i = 0; i < cellsArray.length(); i++) {
+                JSONObject cellObject = cellsArray.getJSONObject(i);
+                String type = cellObject.getString("type");
+                if (!isSupportedType(type)) {
+                    continue;
+                }
+                if ("text".equals(type)) {
+                    if (isMatch(Jsoup.parse(cellObject.getString("data")).text(), query)) {
+                        return true;
+                    }
+                } else {
+                    if (isMatch(cellObject.getString("data"), query)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (JSONException e) {
+            return false;
+        }
     }
 
     private static boolean isMatch(String title, String query) {
@@ -95,5 +143,14 @@ public class Utils {
             }
         }
         return true;
+    }
+
+    public static boolean isSupportedType(String type) {
+        for (String supportedType : supportedTypes) {
+            if (supportedType.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
