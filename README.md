@@ -7,7 +7,7 @@
 1. NoteBook List
 2. Note List
 3. Note Detail View
-4. Search
+4. Search Note
 
 #### TODO
 1. Icon
