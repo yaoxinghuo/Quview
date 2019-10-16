@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -87,7 +88,8 @@ public class MainActivity extends NoteBaseActivity implements AdapterView.OnItem
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        searchView.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
