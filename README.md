@@ -12,6 +12,7 @@
 #### TODO
 * Icon
 * Tag support
+* Full content search
 
 _Snippet about copy quiver library to SD_
 
