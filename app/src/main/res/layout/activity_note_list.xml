@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019.
   ~
   ~ Unless required by applicable law or agreed to in writing, software
@@ -11,9 +10,40 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:orientation="vertical"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent">
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+	<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+		<Button
+				android:id="@+id/search"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:height="40dp"
+				android:text="@string/full_search" />
+
+		<EditText
+				android:id="@+id/name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_margin="10dp"
+				android:layout_toLeftOf="@+id/search"
+				android:height="40dp"
+				android:background="@drawable/ic_edit_text_border"
+				android:padding="6dp" />
+	</RelativeLayout>
+
+	<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="2dp"
+			android:background="@drawable/ic_horizontal_line" />
+
 	<ListView
 			android:id="@+id/note_list"
 			android:layout_width="match_parent"

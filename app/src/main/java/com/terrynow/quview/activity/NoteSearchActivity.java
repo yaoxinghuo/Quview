@@ -20,6 +20,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.terrynow.quview.R;
@@ -40,12 +41,13 @@ import java.util.List;
  * @date 2019-10-15 14:52
  * @description
  */
-public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.OnItemClickListener {
+public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private static final String TAG = "NoteSearchActivity";
 
     private NoteListAdapter noteListAdapter;
     private List<NoteModel> list = new ArrayList<>();
+    private EditText keywordText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,13 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
         noteListView.setAdapter(noteListAdapter);
         noteListView.setOnItemClickListener(this);
 
-        performSearch(getSearchStr(getIntent()));
+        findViewById(R.id.search).setOnClickListener(this);
+
+        keywordText = findViewById(R.id.name);
+
+        String keywords = getSearchStr(getIntent());
+        keywordText.setText(keywords);
+        performSearch(keywords);
 
     }
 
@@ -129,5 +137,14 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
         Intent intent = new Intent(this, NoteDetailActivity.class);
         intent.putExtra("note", noteModel);
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.search:
+                query(keywordText.getText().toString());
+                break;
+        }
     }
 }

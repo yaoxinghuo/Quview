@@ -14,7 +14,7 @@
 				android:layout_height="wrap_content"
 				android:layout_alignParentRight="true"
 				android:layout_centerVertical="true"
-				android:text="@string/qvlibrary_choose"></Button>
+				android:text="@string/qvlibrary_choose" />
 
 		<TextView
 				android:id="@+id/name"

@@ -1,6 +1,7 @@
 <resources>
 	<string name="app_name">Quview</string>
 	<string name="menu_search">Search</string>
+	<string name="full_search">Full Search</string>
 	<string name="qvlibrary_none">No Library Set</string>
 	<string name="qvlibrary_choose">Choose</string>
 	<string name="qvlibrary_no_notebooks">No Notebook in this path</string>
