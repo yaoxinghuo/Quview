@@ -104,13 +104,14 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
 
     private void performSearch(String query, boolean fullSearch) {
         hideSoftKeyboard();
-        SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences",
+                Context.MODE_PRIVATE);
         String qvlibrary = sharedPreferences.getString(Constants.PREF_QV_LIBRARY_PATH, null);
         if (TextUtils.isEmpty(qvlibrary)) {
             Toast.makeText(this, R.string.qvlibrary_none, Toast.LENGTH_LONG).show();
             return;
         }
-        new SearchAsyncTask(this).execute(qvlibrary, query.trim(), fullSearch ? "fs" : "");
+        new SearchAsyncTask(this, fullSearch).execute(qvlibrary, query.trim());
     }
 
     private String getSearchStr(Intent queryIntent) {
@@ -143,14 +144,16 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
     class SearchAsyncTask extends AsyncTask<String, Integer, List<NoteModel>> {
         private ProgressDialog dialog;
         private String query;
+        private boolean fullSearch;
 
-        SearchAsyncTask(NoteSearchActivity activity) {
+        SearchAsyncTask(NoteSearchActivity activity, boolean fullSearch) {
             dialog = new ProgressDialog(activity);
+            this.fullSearch = fullSearch;
         }
 
         @Override
         protected void onPreExecute() {
-            dialog.setMessage(getString(R.string.searching));
+            dialog.setMessage(getString(fullSearch ? R.string.full_searching : R.string.searching));
             dialog.show();
         }
 
@@ -164,7 +167,6 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
             List<NoteModel> results = new ArrayList<>();
             String qvlibrary = args[0];
             this.query = args[1];
-            boolean fullSearch = "fs".equals(args[2]);
             File qvlibraryBase = new File(qvlibrary);
             File[] notebookDirs = qvlibraryBase.listFiles(new FilenameFilter() {
                 @Override
@@ -189,7 +191,8 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
                         notebookModel.setUuid(jsonObject.getString("uuid"));
                         notebookModel.setDir(notebookDir.getAbsolutePath());
 
-                        List<NoteModel> searchedNotes = Utils.searchNotes(notebookModel, query, fullSearch);
+                        List<NoteModel> searchedNotes = Utils.searchNotes(notebookModel, query,
+                                fullSearch);
                         results.addAll(searchedNotes);
                         if (results.size() > 50) {
                             break;
@@ -213,13 +216,17 @@ public class NoteSearchActivity extends NoteBaseActivity implements AdapterView.
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
+            if (!fullSearch && results.size() == 0) {
+                performSearch(query, true);
+            }
         }
     }
 
     private void hideSoftKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm =
+                    (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
