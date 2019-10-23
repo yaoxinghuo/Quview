@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import com.protectsoft.webviewcode.Codeview;
 import com.terrynow.quview.R;
@@ -44,29 +45,32 @@ public class NoteCellListAdapter extends ArrayAdapter<NoteCellModel> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        LinearLayout view = (LinearLayout) LayoutInflater.from(getContext()).inflate(layoutId,
+                parent, false);
         NoteCellModel notecellModel = getItem(position);
         String type = notecellModel.getType();
         if ("markdown".equals(type)) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.list_notecell_markdown
-                    , parent, false);
-            MarkdownView markdownView = view.findViewById(R.id.cell);
+            MarkdownView markdownView = view.findViewById(R.id.cell_markdown);
+            markdownView.setVisibility(View.VISIBLE);
             markdownView.loadMarkdown(notecellModel.getData());
-            return view;
-        }
-
-        View view = LayoutInflater.from(getContext()).inflate(layoutId, parent, false);
-        WebView cellView = view.findViewById(R.id.cell);
-        Codeview codeview = Codeview.with(getContext()).setAutoWrap(true);
-        if ("text".equals(type)) {
+        } else if ("code".equals(type)) {
+//            CodeView codeView = view.findViewById(R.id.cell_code);
+//            codeView.setVisibility(View.VISIBLE);
+//            codeView.setCode(notecellModel.getData(), notecellModel.getLanguage());
+            WebView webView = view.findViewById(R.id.cell_web);
+            webView.setVisibility(View.VISIBLE);
+            Codeview codeview = Codeview.with(getContext()).setAutoWrap(true);
+            codeview.withCode(notecellModel.getData()).setLang(notecellModel.getLanguage()).into(webView);
+        } else {
+            //type: text
+            WebView webView = view.findViewById(R.id.cell_web);
+            webView.setVisibility(View.VISIBLE);
+            Codeview codeview = Codeview.with(getContext()).setAutoWrap(true);
             String imagePath = "file://" + dir + "/resources/";
             String str = notecellModel.getData()
                     .replaceAll(" src=\"quiver-image-url/"
                             , " style=\"width: 100%;height: auto;\" src=\"" + imagePath);
-            codeview.withHtml(str)
-                    .into(cellView);
-        } else if ("code".equals(type)) {
-            codeview.setLang(notecellModel.getLanguage()).withCode(notecellModel.getData())
-                    .into(cellView);
+            codeview.withHtml(str).into(webView);
         }
         //TODO how about latex, diagram?
 

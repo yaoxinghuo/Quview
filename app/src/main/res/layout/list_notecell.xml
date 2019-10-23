@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019.
   ~
   ~ Unless required by applicable law or agreed to in writing, software
@@ -11,12 +10,26 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:orientation="vertical" android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 
 	<WebView
-			android:id="@+id/cell"
+			android:id="@+id/cell_web"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content"
+			android:visibility="gone" />
+
+<!--	<io.github.kbiakov.codeview.CodeView-->
+<!--			android:id="@+id/cell_code"-->
+<!--			android:layout_width="match_parent"-->
+<!--			android:layout_height="wrap_content"-->
+<!--			android:visibility="gone" />-->
+
+	<us.feras.mdv.MarkdownView
+			android:id="@+id/cell_markdown"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:visibility="gone" />
 
 </LinearLayout>

@@ -22,5 +22,7 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+//        CodeProcessor.init(this);
     }
 }
