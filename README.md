@@ -17,7 +17,7 @@
 
 _Snippet about copy quiver library to SD_
 
-`adb push /path/Quiver.qvlibrary /mnt/sdcard/Download/`
+`adb push /path/to/Quiver.qvlibrary /mnt/sdcard/Download/`
 
 #### Screenshots
 ![2019-10-16 21 37 57](https://user-images.githubusercontent.com/69723/66924567-69d98a80-f05d-11e9-808e-f3a87750cd9e.jpg)
